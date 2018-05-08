@@ -1,0 +1,8 @@
+*/__pycache__/*
+spotify_secret.key
+refresh.token
+overwatch_spotify.log
+venv/*
+.idea/*
+test_screenshots/*
+debug.bat
