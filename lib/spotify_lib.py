@@ -9,18 +9,22 @@ from requests.auth import HTTPBasicAuth
 
 
 class InvalidTokenError(Exception):
+    """The client appeared to be authenticated but the access_token was invalid"""
     pass
 
 
 class NotAuthenticatedError(Exception):
+    """The client is not currently authenticated"""
     pass
 
 
 class InvalidClientError(Exception):
+    """client_id, client_secret, or refresh_token are not set"""
     pass
 
 
 class RequestFailedError(Exception):
+    """The request could not be completed"""
     pass
 
 
@@ -105,8 +109,7 @@ class SpotifyClient:
         :param res: The response to parse
         :param success_msg: The message to log on success
         :param error_msg: The message to log on error, as well as the text of the thrown error
-        :raises TimeoutError: If the request timed out
-                RequestFailedError: If the request could not be completed
+        :raises RequestFailedError: If the request could not be completed
                 InvalidTokenError: If the client appeared to be authenticated but the access_token was invalid
         """
         if res.status_code == 204:
@@ -182,7 +185,7 @@ class SpotifyClient:
             try:
                 assert res.status_code == 200
                 res_data = json.loads(res.text)
-                assert res_data['scope'].split(' ') == self.scopes
+                # assert res_data['scope'].split(' ') == self.scopes
                 access_token = res_data['access_token']
                 refresh_token = res_data['refresh_token']
 
@@ -227,7 +230,7 @@ class SpotifyClient:
         try:
             assert res.status_code == 200
             res_data = json.loads(res.text)
-            assert res_data['scope'].split(' ') == self.scopes
+            # assert res_data['scope'].split(' ') == self.scopes
             access_token = res_data['access_token']
             self.access_token = access_token
             self.authenticated = True

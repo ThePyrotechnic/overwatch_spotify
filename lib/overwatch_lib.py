@@ -11,18 +11,22 @@ _DC = windll.user32.GetDC(0)
 
 # TODO write calibration tool to accommodate different brightness settings
 
-_COLORS = {                                 # (RRR, GGG, BBB)
-    'in_menu': (24, 133, 186),              # (16, 28, 41)
-    'waiting': (175, 178, 185),             # (21, 24, 43)
-    'character_select': (255, 255, 255),    # (67,85,195)
+_COLORS = {
+    'in_menu': (24, 113, 186),
+    'waiting': (175, 178, 185),
+    'character_select': (255, 255, 255),
 }
 
-_PIXELS = {
+_PIXELS = {  # 2560x1440
     'in_menu': [(1936, 49), (1936, 109), (1989, 49), (1976, 87)],
     'waiting': [(2369, 1204), (2415, 1245), (2377, 1249), (2343, 1270)],
     'character_select': [(2357, 250), (2402, 250), (2437, 250), (2483, 250)],
-
 }
+# _PIXELS = {  # 1920x1080
+#     'in_menu': [(1490, 40), (1458, 74)],
+#     'waiting': [(1780, 904), (1810, 949), (1742, 942), (1782, 935)],
+#     'character_select': [(1766, 185), (1787, 193), (1815, 188), (1862, 192)],
+# }
 
 
 def _get_pixel(x: int, y: int) -> int:
@@ -63,15 +67,30 @@ def _in_acceptable_range(color_to_check: Tuple[int, int, int], color_ref: Tuple[
     return False
 
 
+def _is_greyscale(color_to_check: Tuple[int, int, int], tolerance: int) -> bool:
+    """
+    Check if a given pixel is some shade of grey, given a tolerance level
+    :param color_to_check: Tje color to check
+    :param tolerance: The maximum distance that any R, G, or B value can be from any of the other two values
+    :return: True if color_to_check is greyscale, false otherwise
+    """
+    greatest = max(color_to_check)
+    lo = greatest - tolerance
+    hi = greatest + tolerance
+    for c in color_to_check:
+        if not (lo <= c <= hi):
+            return False
+    return True
+
+
 def _in_menu() -> bool:
     """
     Check if the Overwatch main menu is visible
     :return: True if the main menu is visible, false otherwise
     """
-    # Check the bottom menu bar at the far left.
     errors = len([pair for pair in _PIXELS['in_menu']
                   if not _in_acceptable_range(_pixel_to_rgb(_get_pixel(*pair)), _COLORS['in_menu'], distance=2)])
-    # Allow one error because the mouse may be covering one of the spots
+    # Allow one error because the mouse may be covering one of the pixels
     return errors < 2
 
 
@@ -81,8 +100,8 @@ def _waiting() -> bool:
     :return: True if the game is in the waiting state, false otherwise
     """
     errors = len([pair for pair in _PIXELS['waiting']
-                  if not _in_acceptable_range(_pixel_to_rgb(_get_pixel(*pair)), _COLORS['waiting'], distance=2)])
-    return errors < 2
+                  if not _is_greyscale(_pixel_to_rgb(_get_pixel(*pair)), tolerance=12)])
+    return errors < 1
 
 
 def _in_character_select() -> bool:

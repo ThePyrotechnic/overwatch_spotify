@@ -27,6 +27,8 @@ def try_spotify_function(func: Callable, handled_errors: list, func_args=None):
         func_args = []
     try:
         func(*func_args)
+    except sl.InvalidTokenError:
+        pass
     except sl.RequestFailedError as e:
         if str(e) in handled_errors:
             pass
@@ -124,6 +126,7 @@ def main():
     print('Running. Press Ctrl+C to quit.')
     last_state = ol.get_state()
     logging.info(f'Overwatch: Initial state: {last_state}')
+    handle_event(state_map[last_state])
     while True:
         cur_state = ol.get_state()
         if cur_state != last_state:

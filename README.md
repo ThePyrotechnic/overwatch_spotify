@@ -23,7 +23,7 @@ This program controls Spotify while playing Overwatch.
 6. Run `overwatch_spotify.bat`. You will be asked to enter your app's credentials.
 
 ## Running
-1. Run `overwacch_spotify.bat`
+1. Run `overwatch_spotify.bat`
 2. Enjoy.
 3. Report any problems in an issue to this repository.
 
